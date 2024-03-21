@@ -24,6 +24,7 @@ from captcha.image import ImageCaptcha
 # user has 1 minute to solve captcha
 captcha_seconds = 60
 #captcha_seconds = 600 # 10 min
+message_size_max = 3_000_000 # 3 MB
 attachment_size_max = 6_000_000 # 6 MB
 guestbook_size_max = 500_000_000 # 500 MB
 
@@ -206,6 +207,9 @@ def main_cgi():
     message = get_arg("message")
     captcha = get_arg("captcha")
     captcha_hash = get_arg("captcha-hash")
+
+    if len(message) > message_size_max:
+      error(f"message is too large. max: {message_size_max} bytes")
 
     import hashlib
     captcha_hash_actual = hashlib.sha256(captcha_hash_seed + captcha.encode("ascii", errors="replace")).hexdigest()
